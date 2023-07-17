@@ -1,0 +1,4 @@
+.terraform*
+terraform.tfstate*
+terraform-plugin-proxmox.log
+secrets.tf
