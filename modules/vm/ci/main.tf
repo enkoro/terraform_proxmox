@@ -35,7 +35,7 @@ resource "proxmox_vm_qemu" "pve" {
   ipconfig0 = "ip=dhcp,ip6=dhcp"
 
   sshkeys = var.ssh_key
-  tags    = format("%s %s", var.network_ip, var.tags)
+  tags    = format("%s %s %s", var.network_ip, "vm", var.tags)
 
   provisioner "remote-exec" {
     inline = ["echo Hello from $(hostname -f)"]
@@ -50,16 +50,19 @@ resource "proxmox_vm_qemu" "pve" {
 
   provisioner "local-exec" {
     command = <<EOT
-      python3 ./external/tf_ansible_inventory/tf_ansible_inventory.py add ${self.name} ${var.network_ip} ${replace(self.tags, ";", " ")}
+      python3 ./external/ansible/tf_ansible_inventory.py add ${self.name} ${replace(self.tags, ";", " ")}
       ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
+      ssh-keyscan -H ${self.name} >> /root/.ssh/known_hosts
+      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} ${replace(var.tags, ";", " ")}
     EOT
   }
 
   provisioner "local-exec" {
     when    = destroy
     command = <<EOT
-      python3 ./external/tf_ansible_inventory/tf_ansible_inventory.py rm ${self.name} ${split(" ", self.tags)[0]}
-      ssh-keygen -R ${split(" ", self.tags)[0]}
+      python3 ./external/ansible/tf_ansible_inventory.py rm ${self.name} ${split(" ", self.tags)[0]}
+      ssh-keygen -R ${split(";", self.tags)[0]}
+      ssh-keygen -R ${self.name}
     EOT
   }
 

@@ -32,7 +32,7 @@ resource "proxmox_lxc" "pve" {
     size    = var.rootfs_size
   }
 
-  tags = format("%s %s", var.network_ip, var.tags)
+  tags = format("%s %s %s", var.network_ip, "lxc", var.tags)
 
   provisioner "remote-exec" {
     inline = ["echo Hello from $(hostname -f)"]
@@ -47,16 +47,19 @@ resource "proxmox_lxc" "pve" {
 
   provisioner "local-exec" {
     command = <<EOT
-      python3 ./external/tf_ansible_inventory/tf_ansible_inventory.py add ${self.hostname} ${var.network_ip} ${replace(self.tags, ";", " ")}
+      python3 ./external/ansible/tf_ansible_inventory.py add ${self.hostname} ${replace(self.tags, ";", " ")}
       ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
+      ssh-keyscan -H ${self.hostname} >> /root/.ssh/known_hosts
+      python3 ./external/ansible/tf_ansible_playbook.py ${self.hostname} ${replace(var.tags, ";", " ")}
     EOT
   }
 
   provisioner "local-exec" {
     when    = destroy
     command = <<EOT
-      python3 ./external/tf_ansible_inventory/tf_ansible_inventory.py rm ${self.hostname} ${split(" ", self.tags)[0]}
-      ssh-keygen -R ${split(" ", self.tags)[0]}
+      python3 ./external/ansible/tf_ansible_inventory.py rm ${self.hostname} ${split(" ", self.tags)[0]}
+      ssh-keygen -R ${split(";", self.tags)[0]}
+      ssh-keygen -R ${self.hostname}
     EOT
   }
 
