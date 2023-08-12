@@ -1,5 +1,12 @@
 locals {
   civms = {
+    # "testvm" = {
+    #   cores       = 1
+    #   memory      = 1024
+    #   rootfs_size = "8G"
+    #   template    = "ci-ubuntu-template"
+    #   network_ip  = "192.168.1.15"
+    # }
   }
 
   default_vm_cores               = 2

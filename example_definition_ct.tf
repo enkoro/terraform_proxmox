@@ -1,12 +1,12 @@
 locals {
   cts = {
-    "vault" = {
-      cores       = 1
-      memory      = 1024
-      rootfs_size = "8G"
-      template    = "local:vztmpl/ubuntu-22.10-standard_22.10-1_amd64.tar.zst"
-      network_ip  = "192.168.1.15"
-    }
+    # "test" = {
+    #   cores       = 1
+    #   memory      = 1024
+    #   rootfs_size = "8G"
+    #   template    = "local:vztmpl/ubuntu-22.10-standard_22.10-1_amd64.tar.zst"
+    #   network_ip  = "192.168.1.14"
+    # }
   }
 
 
