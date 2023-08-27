@@ -53,7 +53,7 @@ resource "proxmox_vm_qemu" "pve" {
       python3 ./external/ansible/tf_ansible_inventory.py add ${self.name} ${replace(self.tags, ";", " ")}
       ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
       ssh-keyscan -H ${self.name} >> /root/.ssh/known_hosts
-      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} ${replace(var.tags, ";", " ")}
+      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} vm ${replace(var.tags, ";", " ")}
     EOT
   }
 
