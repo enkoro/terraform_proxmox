@@ -1,12 +1,14 @@
 locals {
   civms = {
     # "testvm" = {
-    #   cores       = 1
-    #   memory      = 1024
-    #   rootfs_size = "8G"
-    #   template    = "ci-ubuntu-template"
-    #   network_ip  = "192.168.1.15"
-    # }
+    #   cores                   = 1
+    #   memory                  = 1024
+    #   rootfs_size             = "8G"
+    #   template                = "ci-ubuntu-template"
+    #   network_ip              = "192.168.1.15"
+    #   tags                    = ["ubuntu", "portainer_server"]
+    #   create_local_dns_record = true
+    #   qemu_os                 = "l26" # <l24 | l26 | other | solaris | w2k | w2k3 | w2k8 | win10 | win11 | win7 | win8 | wvista | wxp> or None
   }
 
   default_vm_cores               = 2
@@ -16,6 +18,7 @@ locals {
   default_vm_rootfs_size         = "32G"
   default_vm_network_model       = "virtio"
   default_vm_network_bridge_type = "vmbr0"
-  default_vm_tags                = ""
+  default_vm_tags                = []
   default_vm_private_key_file    = "/root/.ssh/id_rsa"
+  default_vm_ci_user             = "root"
 }

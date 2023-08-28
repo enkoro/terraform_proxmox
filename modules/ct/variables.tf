@@ -51,7 +51,7 @@ variable "rootfs_size" {
 }
 
 variable "tags" {
-  type = string
+  type = list(string)
 }
 
 variable "private_key_file" {
@@ -60,4 +60,8 @@ variable "private_key_file" {
 
 variable "domain" {
   type = string
+}
+
+variable "create_local_dns_record" {
+  type = bool
 }

@@ -47,10 +47,14 @@ variable "ssh_key" {
 }
 
 variable "tags" {
-  type = string
+  type = list(string)
 }
 
 variable "private_key_file" {
+  type = string
+}
+
+variable "user" {
   type = string
 }
 
@@ -59,5 +63,13 @@ variable "password" {
 }
 
 variable "domain" {
+  type = string
+}
+
+variable "create_local_dns_record" {
+  type = bool
+}
+
+variable "qemu_os" {
   type = string
 }

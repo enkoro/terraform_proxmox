@@ -6,6 +6,7 @@ resource "mikrotik_dhcp_lease" "civm" {
 }
 
 resource "mikrotik_dns_record" "civm" {
+  count   = var.create_local_dns_record ? 1 : 0
   name    = format("%s%s%s", var.hostname, ".", var.domain)
   address = var.network_ip
 }
@@ -17,8 +18,10 @@ resource "proxmox_vm_qemu" "pve" {
   cores       = var.cores
   memory      = var.memory
   onboot      = true
+  ciuser      = var.user
   cipassword  = var.password
   os_type     = "cloud-init"
+  qemu_os     = var.qemu_os
 
   disk {
     type    = "scsi"
@@ -35,7 +38,8 @@ resource "proxmox_vm_qemu" "pve" {
   ipconfig0 = "ip=dhcp,ip6=dhcp"
 
   sshkeys = var.ssh_key
-  tags    = format("%s %s %s", var.network_ip, "vm", var.tags)
+  tags    = join(";", sort(concat(var.tags, [var.network_ip])))
+  # tags    = format("%s;%s;%s", var.network_ip, replace(var.tags, " ", ";"))
 
   provisioner "remote-exec" {
     inline = ["echo Hello from $(hostname -f)"]
@@ -53,7 +57,7 @@ resource "proxmox_vm_qemu" "pve" {
       python3 ./external/ansible/tf_ansible_inventory.py add ${self.name} ${replace(self.tags, ";", " ")}
       ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
       ssh-keyscan -H ${self.name} >> /root/.ssh/known_hosts
-      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} vm ${replace(var.tags, ";", " ")}
+      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} vm ${join(" ", var.tags)}
     EOT
   }
 

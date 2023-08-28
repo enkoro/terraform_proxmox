@@ -6,6 +6,7 @@ resource "mikrotik_dhcp_lease" "ct" {
 }
 
 resource "mikrotik_dns_record" "ct" {
+  count   = var.create_local_dns_record ? 1 : 0
   name    = format("%s%s%s", var.hostname, ".", var.domain)
   address = var.network_ip
 }
@@ -32,7 +33,8 @@ resource "proxmox_lxc" "pve" {
     size    = var.rootfs_size
   }
 
-  tags = format("%s %s %s", var.network_ip, "lxc", var.tags)
+  tags = join(";", sort(concat(var.tags, [var.network_ip])))
+  # tags = format("%s %s %s", var.network_ip, replace(var.tags, " ", ";"))
 
   provisioner "remote-exec" {
     inline = ["echo Hello from $(hostname -f)"]
@@ -50,7 +52,7 @@ resource "proxmox_lxc" "pve" {
       python3 ./external/ansible/tf_ansible_inventory.py add ${self.hostname} ${replace(self.tags, ";", " ")}
       ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
       ssh-keyscan -H ${self.hostname} >> /root/.ssh/known_hosts
-      python3 ./external/ansible/tf_ansible_playbook.py ${self.hostname} ${replace(var.tags, ";", " ")}
+      python3 ./external/ansible/tf_ansible_playbook.py ${self.hostname} ${join(" ", var.tags)}
     EOT
   }
 
