@@ -14,6 +14,7 @@ module "pve_ct" {
   tags                    = concat(lookup(each.value, "tags", local.default_ct_tags), ["lxc"])
   private_key_file        = lookup(each.value, "private_key_file", local.default_ct_private_key_file)
   create_local_dns_record = lookup(each.value, "create_local_dns_record", var.default_create_local_dns_record)
+  ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
 
   password = var.default_global_root_password
   ssh_key  = var.default_global_root_ssh_key
@@ -39,6 +40,7 @@ module "pve_vm_ci" {
   private_key_file        = lookup(each.value, "private_key_file", local.default_vm_private_key_file)
   create_local_dns_record = lookup(each.value, "create_local_dns_record", var.default_create_local_dns_record)
   qemu_os                 = lookup(each.value, "qemu_os", "other")
+  ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
 
   user     = lookup(each.value, "user", local.default_vm_ci_user)
   password = var.default_global_root_password

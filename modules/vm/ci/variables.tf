@@ -73,3 +73,8 @@ variable "create_local_dns_record" {
 variable "qemu_os" {
   type = string
 }
+
+variable "ansible_playbooks" {
+  type = list(string)
+}
+

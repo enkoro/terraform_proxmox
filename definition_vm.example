@@ -9,6 +9,19 @@ locals {
     #   tags                    = ["ubuntu", "portainer_server"]
     #   create_local_dns_record = true
     #   qemu_os                 = "l26" # <l24 | l26 | other | solaris | w2k | w2k3 | w2k8 | win10 | win11 | win7 | win8 | wvista | wxp> or None
+    # },
+    # "maas" = {
+    #   cores                   = 2
+    #   memory                  = 4096
+    #   rootfs_size             = "16G"
+    #   template                = "ci-ubuntu-template"
+    #   network_ip              = "192.168.1.17"
+    #   ansible_dir             = "/root/ansible/homelab/"
+    #   tags                    = ["ubuntu","maas_postgres", "maas_region_controller", "maas_rack_controller"]
+    #   create_local_dns_record = false
+    #   qemu_os                 = "l26"
+    #   ansible_playbooks       = ["/root/ansible/homelab/site.yml", "/root/ansible/maas-ansible-playbook/maas.yml"]
+    # }
   }
 
   default_vm_cores               = 2

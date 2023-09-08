@@ -65,3 +65,7 @@ variable "domain" {
 variable "create_local_dns_record" {
   type = bool
 }
+
+variable "ansible_playbooks" {
+  type = list(string)
+}
