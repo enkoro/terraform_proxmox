@@ -1,12 +1,12 @@
 terraform {
   required_providers {
     proxmox = {
-      source  = "telmate/proxmox"
-      version = "~> 2.9.14"
+      source  = "local/telmate/proxmox"
+      version = ">= 3.0.0"
     }
     mikrotik = {
       source  = "ddelnano/mikrotik"
-      version = "~> 0.10.0"
+      version = ">= 0.15.0"
     }
   }
 }

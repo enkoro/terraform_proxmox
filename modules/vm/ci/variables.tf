@@ -78,3 +78,26 @@ variable "ansible_playbooks" {
   type = list(string)
 }
 
+variable "ansible_hosts_file" {
+  type = string
+}
+
+variable "known_hosts_file" {
+  type = string
+}
+
+variable "qemu_agent" {
+  type = number
+}
+
+variable "hastate" {
+  type = string
+}
+
+variable "vm_state" {
+  type = string
+}
+
+variable "target_node" {
+  type = string
+}

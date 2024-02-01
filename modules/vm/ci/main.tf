@@ -12,7 +12,8 @@ resource "mikrotik_dns_record" "civm" {
 }
 
 resource "proxmox_vm_qemu" "pve" {
-  target_node = "pve"
+  desc        = var.ansible_hosts_file
+  target_node = var.target_node
   name        = var.hostname
   clone       = var.template
   cores       = var.cores
@@ -22,13 +23,22 @@ resource "proxmox_vm_qemu" "pve" {
   cipassword  = var.password
   os_type     = "cloud-init"
   qemu_os     = var.qemu_os
+  agent       = var.qemu_agent
+  hastate     = var.hastate
+  vm_state    = var.vm_state
 
-  disk {
-    type    = "scsi"
-    storage = var.rootfs_storage
-    size    = var.rootfs_size
+  disks {
+    scsi{
+      scsi0{
+        disk{
+          storage = var.rootfs_storage
+          size    = var.rootfs_size
+        }
+      }
+    }
   }
   scsihw = "virtio-scsi-pci"
+  cloudinit_cdrom_storage = var.rootfs_storage
 
   network {
     model   = var.network_model
@@ -51,22 +61,22 @@ resource "proxmox_vm_qemu" "pve" {
     }
   }
 
-  provisioner "local-exec" {
-    command = <<EOT
-      python3 ./external/ansible/tf_ansible_inventory.py add ${self.name} ${replace(self.tags, ";", " ")}
-      ssh-keyscan -H ${var.network_ip} >> /root/.ssh/known_hosts
-      ssh-keyscan -H ${self.name} >> /root/.ssh/known_hosts
-      python3 ./external/ansible/tf_ansible_playbook.py ${self.name} ${join(" ", var.ansible_playbooks)}
-    EOT
-  }
+  # provisioner "local-exec" {
+  #   command = <<EOT
+  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.desc} add ${self.name} ${replace(self.tags, ";", " ")}
+  #     ssh-keyscan -H ${var.network_ip} >> ${var.known_hosts_file}
+  #     ssh-keyscan -H ${self.name} >> ${var.known_hosts_file}
+  #     python3 ./external/ansible/tf_ansible_playbook.py ${self.name} ${join(" ", var.ansible_playbooks)}
+  #   EOT
+  # }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOT
-      python3 ./external/ansible/tf_ansible_inventory.py rm ${self.name} ${split(";", self.tags)[0]}
-      ssh-keygen -R ${split(";", self.tags)[0]}
-      ssh-keygen -R ${self.name}
-    EOT
-  }
+  # provisioner "local-exec" {
+  #   when    = destroy
+  #   command = <<EOT
+  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.desc} rm ${self.name} ${split(";", self.tags)[0]}
+  #     ssh-keygen -R ${split(";", self.tags)[0]}
+  #     ssh-keygen -R ${self.name}
+  #   EOT
+  # }
 
 }

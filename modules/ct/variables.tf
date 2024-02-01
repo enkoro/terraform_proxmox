@@ -69,3 +69,23 @@ variable "create_local_dns_record" {
 variable "ansible_playbooks" {
   type = list(string)
 }
+
+variable "ansible_hosts_file" {
+  type = string
+}
+
+variable "known_hosts_file" {
+  type = string
+}
+
+variable "hastate" {
+  type = string
+}
+
+variable "start" {
+  type = bool
+}
+
+variable "target_node" {
+  type = string
+}

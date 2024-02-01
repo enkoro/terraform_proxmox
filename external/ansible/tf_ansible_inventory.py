@@ -1,14 +1,15 @@
 import re
 import sys
 
-if len(sys.argv) < 4 or not sys.argv[1] in ["rm", "add"]:
+if len(sys.argv) < 5 or not sys.argv[2] in ["rm", "add"]:
     sys.exit(1)
 
 inventory = {}
 new_inventory = {}
 tag = ""
+ansible_hosts = sys.argv[1]
 
-with open("/etc/ansible/hosts") as f:
+with open(ansible_hosts) as f:
     for line in f.readlines():
         if re.match("\[\S+\]", line):
             tag = line.strip()[1:-1]
@@ -16,15 +17,15 @@ with open("/etc/ansible/hosts") as f:
         elif tag != "" and line.strip() != "":
             inventory[tag].add(line.strip())
 
-hostname = sys.argv[2]
-ip = sys.argv[3]
+hostname = sys.argv[3]
+ip = sys.argv[4]
 
-if sys.argv[1] == "add":
+if sys.argv[2] == "add":
 
     if "servers" in inventory:
         inventory["servers"].add(hostname + " ansible_host=" + ip)
-    if len(sys.argv) > 4:
-        for new_tag in sys.argv[4:]:
+    if len(sys.argv) > 5:
+        for new_tag in sys.argv[5:]:
             if new_tag in inventory:
                 inventory[new_tag].add(hostname + " ansible_host=" + ip)
             else:
@@ -39,7 +40,7 @@ else:
         if not len(new_hosts) == 0 or tag == "servers":
             new_inventory[tag] = new_hosts
 
-with open("/etc/ansible/hosts", "w") as f:
+with open(ansible_hosts, "w") as f:
     sys.stdout = f
     for tag, hosts in new_inventory.items():
         print("[" + tag + "]")

@@ -12,13 +12,18 @@ module "pve_ct" {
   rootfs_storage          = lookup(each.value, "rootfs_storage", local.default_ct_rootfs_storage)
   rootfs_size             = lookup(each.value, "rootfs_size", local.default_ct_rootfs_size)
   tags                    = concat(lookup(each.value, "tags", local.default_ct_tags), ["lxc"])
-  private_key_file        = lookup(each.value, "private_key_file", local.default_ct_private_key_file)
   create_local_dns_record = lookup(each.value, "create_local_dns_record", var.default_create_local_dns_record)
   ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
-
-  password = var.default_global_root_password
-  ssh_key  = var.default_global_root_ssh_key
-  domain   = var.default_global_domain
+  hastate                 = lookup(each.value, "hastate", "ignored")
+  start                   = lookup(each.value, "start", true)
+  target_node             = lookup(each.value, "target_node", [var.default_target_node])
+  
+  password                = var.default_global_root_password
+  ssh_key                 = var.default_global_root_ssh_key
+  private_key_file        = var.default_ssh_private_key_file
+  domain                  = var.default_global_domain
+  ansible_hosts_file      = var.default_ansible_hosts_file
+  known_hosts_file        = var.default_known_hosts_file
 
   source = "./modules/ct"
 }
@@ -37,15 +42,21 @@ module "pve_vm_ci" {
   network_mac_postfix     = length(format("%X", split(".", each.value.network_ip)[3])) == 1 ? format("0%X", split(".", each.value.network_ip)[3]) : format("%X", split(".", each.value.network_ip)[3])
   network_ip              = each.value.network_ip
   tags                    = concat(lookup(each.value, "tags", local.default_vm_tags), ["vm"])
-  private_key_file        = lookup(each.value, "private_key_file", local.default_vm_private_key_file)
   create_local_dns_record = lookup(each.value, "create_local_dns_record", var.default_create_local_dns_record)
   qemu_os                 = lookup(each.value, "qemu_os", "other")
+  qemu_agent              = lookup(each.value, "qemu_agent", 0)
   ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
+  hastate                 = lookup(each.value, "hastate", "ignored")
+  vm_state                = lookup(each.value, "vm_state", "running")
+  target_node             = lookup(each.value, "target_node", [var.default_target_node])
 
-  user     = lookup(each.value, "user", local.default_vm_ci_user)
-  password = var.default_global_root_password
-  ssh_key  = var.default_global_root_ssh_key
-  domain   = var.default_global_domain
+  user                    = lookup(each.value, "user", local.default_vm_ci_user)
+  password                = var.default_global_root_password
+  ssh_key                 = var.default_global_root_ssh_key
+  private_key_file        = var.default_ssh_private_key_file
+  domain                  = var.default_global_domain
+  ansible_hosts_file      = var.default_ansible_hosts_file
+  known_hosts_file        = var.default_known_hosts_file
 
   source = "./modules/vm/ci"
 }
