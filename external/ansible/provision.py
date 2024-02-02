@@ -20,12 +20,14 @@ def readInventory(hosts_path):
 
 def writeInventory(hosts_path, inventory):
     with open(hosts_path, "w") as f:
+        so = sys.stdout
         sys.stdout = f
         for tag, hosts in inventory.items():
             print("[" + tag + "]")
             for host in hosts:
                 print(host)
             print()
+        sys.stdout = so
 
 
 def runPlaybook(host, playbook):

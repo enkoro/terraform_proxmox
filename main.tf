@@ -16,7 +16,7 @@ module "pve_ct" {
   ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
   hastate                 = lookup(each.value, "hastate", "ignored")
   start                   = lookup(each.value, "start", true)
-  target_node             = lookup(each.value, "target_node", [var.default_target_node])
+  target_node             = lookup(each.value, "target_node", var.default_target_node)
   
   password                = var.default_global_root_password
   ssh_key                 = var.default_global_root_ssh_key
@@ -48,7 +48,7 @@ module "pve_vm_ci" {
   ansible_playbooks       = lookup(each.value, "ansible_playbooks", [var.default_ansible_playbook])
   hastate                 = lookup(each.value, "hastate", "ignored")
   vm_state                = lookup(each.value, "vm_state", "running")
-  target_node             = lookup(each.value, "target_node", [var.default_target_node])
+  target_node             = lookup(each.value, "target_node", var.default_target_node)
 
   user                    = lookup(each.value, "user", local.default_vm_ci_user)
   password                = var.default_global_root_password
