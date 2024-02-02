@@ -101,3 +101,7 @@ variable "vm_state" {
 variable "target_node" {
   type = string
 }
+
+variable "cluster_name" {
+  type = string
+}

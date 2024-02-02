@@ -1,7 +1,7 @@
 resource "mikrotik_dhcp_lease" "ct" {
   address    = var.network_ip
   macaddress = format("%s%s", var.network_mac_prefix, var.network_mac_postfix)
-  comment    = var.hostname
+  comment    = format("%s@%s", var.hostname, var.cluster_name)
   blocked    = "false"
 }
 

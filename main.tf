@@ -1,5 +1,6 @@
 module "pve_ct" {
   for_each                = local.cts
+  cluster_name            = var.default_cluster_name
   hostname                = each.key
   ostemplate              = each.value.template
   network_ip              = each.value.network_ip
@@ -30,6 +31,7 @@ module "pve_ct" {
 
 module "pve_vm_ci" {
   for_each                = local.civms
+  cluster_name            = var.default_cluster_name
   hostname                = each.key
   template                = each.value.template
   cores                   = lookup(each.value, "cores", local.default_vm_cores)
