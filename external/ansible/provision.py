@@ -49,7 +49,6 @@ parser.add_argument('-P', '--playbooks', nargs='*', required=False,
                     help='IP to add to known_hosts.')
 
 args = parser.parse_args()
-print(args)
 
 hosts_path = args.ansible_hosts[0]
 hostname = args.hostname[0]
