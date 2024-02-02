@@ -4,3 +4,4 @@ terraform-plugin-proxmox.log
 secrets.tf
 definition_*.tf
 .env
+.vscode
