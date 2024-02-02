@@ -49,22 +49,15 @@ resource "proxmox_lxc" "pve" {
     }
   }
 
-  # provisioner "local-exec" {
-  #   command = <<EOT
-  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.description} add ${self.hostname} ${replace(self.tags, ";", " ")}
-  #     ssh-keyscan -H ${var.network_ip} >> ${var.known_hosts_file}
-  #     ssh-keyscan -H ${self.hostname} >> ${var.known_hosts_file}
-  #     python3 ./external/ansible/tf_ansible_playbook.py ${self.hostname} ${join(" ", var.ansible_playbooks)}
-  #   EOT
-  # }
+  provisioner "local-exec" {
+    quiet   = false
+    command = "python3 ./external/ansible/provision.py -H ${trimspace(self.description)} -N ${self.hostname} -T ${replace(self.tags, ";", " ")} -K ${var.known_hosts_file} -P ${join(" ", var.ansible_playbooks)}"
+  }
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = <<EOT
-  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.description} rm ${self.hostname} ${split(";", self.tags)[0]}
-  #     ssh-keygen -R ${split(";", self.tags)[0]}
-  #     ssh-keygen -R ${self.hostname}
-  #   EOT
-  # }
+  provisioner "local-exec" {
+    when    = destroy
+    quiet   = false
+    command = "python3 ./external/ansible/destroy.py -H ${trimspace(self.description)} -N ${self.hostname} -I ${split(";", self.tags)[0]}"
+  }
 
 }

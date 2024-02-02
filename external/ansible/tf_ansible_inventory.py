@@ -1,7 +1,16 @@
 import re
 import sys
 
-if len(sys.argv) < 5 or not sys.argv[2] in ["rm", "add"]:
+if len(sys.argv) < 3:
+    sys.exit(1)
+
+if sys.argv[2] == "add":
+    if len(sys.argv) < 5:
+        sys.exit(1)
+elif sys.argv[2] == "rm":
+    if len(sys.argv) < 4:
+        sys.exit(1)
+else:
     sys.exit(1)
 
 inventory = {}
@@ -18,9 +27,9 @@ with open(ansible_hosts) as f:
             inventory[tag].add(line.strip())
 
 hostname = sys.argv[3]
-ip = sys.argv[4]
 
 if sys.argv[2] == "add":
+    ip = sys.argv[4]
 
     if "servers" in inventory:
         inventory["servers"].add(hostname + " ansible_host=" + ip)
@@ -35,7 +44,7 @@ else:
     for tag, hosts in inventory.items():
         new_hosts = set()
         for host in hosts:
-            if not (host.split()[0] == hostname and host.split()[1] == "ansible_host=" + ip):
+            if not (host.split()[0] == hostname):
                 new_hosts.add(host)
         if not len(new_hosts) == 0 or tag == "servers":
             new_inventory[tag] = new_hosts

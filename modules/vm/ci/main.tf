@@ -61,22 +61,15 @@ resource "proxmox_vm_qemu" "pve" {
     }
   }
 
-  # provisioner "local-exec" {
-  #   command = <<EOT
-  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.desc} add ${self.name} ${replace(self.tags, ";", " ")}
-  #     ssh-keyscan -H ${var.network_ip} >> ${var.known_hosts_file}
-  #     ssh-keyscan -H ${self.name} >> ${var.known_hosts_file}
-  #     python3 ./external/ansible/tf_ansible_playbook.py ${self.name} ${join(" ", var.ansible_playbooks)}
-  #   EOT
-  # }
+  provisioner "local-exec" {
+    quiet   = false
+    command = "python3 ./external/ansible/provision.py -H ${trimspace(self.desc)} -N ${self.name} -T ${replace(self.tags, ";", " ")} -K ${var.known_hosts_file} -P ${join(" ", var.ansible_playbooks)}"
+  }
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = <<EOT
-  #     python3 ./external/ansible/tf_ansible_inventory.py ${self.desc} rm ${self.name} ${split(";", self.tags)[0]}
-  #     ssh-keygen -R ${split(";", self.tags)[0]}
-  #     ssh-keygen -R ${self.name}
-  #   EOT
-  # }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "./external/ansible/destroy.py -H ${trimspace(self.desc)} -N ${self.name} -I ${split(";", self.tags)[0]}"
+    interpreter = ["python3"]
+  }
 
 }
