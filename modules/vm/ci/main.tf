@@ -68,8 +68,7 @@ resource "proxmox_vm_qemu" "pve" {
 
   provisioner "local-exec" {
     when    = destroy
-    command = "./external/ansible/destroy.py -H ${trimspace(self.desc)} -N ${self.name} -I ${split(";", self.tags)[0]}"
-    interpreter = ["python3"]
+    command = "python3 ./external/ansible/destroy.py -H ${trimspace(self.desc)} -N ${self.name} -I ${split(";", self.tags)[0]}"
   }
 
 }
