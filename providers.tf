@@ -1,5 +1,5 @@
 # provider "proxmox" {
-#   pm_api_url = "https://pve:8006/api2/json"
+#   pm_api_url = "https://192.168.1.21:8006/api2/json"
 # }
 
 # provider "mikrotik" {
